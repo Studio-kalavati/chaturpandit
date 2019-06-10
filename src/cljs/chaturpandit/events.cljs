@@ -18,3 +18,9 @@
  ::set-re-pressed-example
  (fn [db [_ value]]
    (assoc db :re-pressed-example value)))
+
+(re-frame/reg-event-db
+ ::set-comp-data
+ (fn [db [_ [comp-data data-type]]]
+   (assoc db :data-type data-type 
+          :comp-data comp-data)))

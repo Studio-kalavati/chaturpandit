@@ -5,6 +5,7 @@
                  [re-frame "0.10.6"]
                  [re-com "2.4.0"]
                  [secretary "1.2.3"]
+                 [studiokalavati/bhatkhande-viewer "0.1.0-SNAPSHOT"]
                  [re-pressed "0.2.2"]
                  [breaking-point "0.1.2"]]
 
@@ -24,7 +25,7 @@
   :profiles
   {:dev
    {:dependencies [[binaryage/devtools "0.9.10"]
-                   [figwheel-sidecar "0.5.16"]
+                   [figwheel-sidecar "0.5.18"]
                    [cider/piggieback "0.3.5"]]
 
     :plugins      [[lein-figwheel "0.5.18"]

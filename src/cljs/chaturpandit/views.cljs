@@ -1,77 +1,108 @@
 (ns chaturpandit.views
   (:require
-   [re-frame.core :as re-frame]
-   [re-com.core :as re-com]
+   [re-frame.core :as re-frame :refer [dispatch subscribe]]
+   [re-com.core :as re-com :refer [h-box v-box title hyperlink-href input-text button
+                                   box gap
+                                   md-icon-button]]
    [breaking-point.core :as bp]
    [re-pressed.core :as rp]
+   [reagent.core  :as    reagent]
    [chaturpandit.subs :as subs]
-   ))
-
-
-;; home
-
-(defn display-re-pressed-example []
-  (let [re-pressed-example (re-frame/subscribe [::subs/re-pressed-example])]
-    [:div
-
-     [:p
-      [:span "Re-pressed is listening for keydown events. A message will be displayed when you type "]
-      [:strong [:code "hello"]]
-      [:span ". So go ahead, try it out!"]]
-
-     (when-let [rpe @re-pressed-example]
-       [re-com/alert-box
-        :alert-type :info
-        :body rpe])]))
+   [chaturpandit.events :as events]
+   [bhatkhande.views :as bv]
+   [cljs.reader :as cljr]
+   [bhatkhande.parts :as p]))
 
 (defn home-title []
-  (let [name (re-frame/subscribe [::subs/name])]
-    [re-com/title
-     :label (str "Hello from " @name ". This is the Home Page.")
-     :level :level1]))
-
-(defn link-to-about-page []
-  [re-com/hyperlink-href
-   :label "go to About Page"
-   :href "#/about"])
+  [h-box
+   :gap "20px"
+   ;:align :stretch
+   :justify :center
+   :children [[box
+               :align-self :center
+               :child [hyperlink-href
+                           :label [:i {:class "zmdi zmdi-home zmdi-hc-2x"}]
+                           :href "#/"]]
+              [box
+               :align-self :center
+               :child [title
+                           
+                           :label (str "Bhatkhande notations online")
+                           :level :level2]]]])
 
 (defn home-panel []
-  [re-com/v-box
-   :gap "1em"
-   :children [[home-title]
-              [link-to-about-page]
-              [display-re-pressed-example]
-              [:div
-               [:h3 (str "screen-width: " @(re-frame/subscribe [::bp/screen-width]))]
-               [:h3 (str "screen: " @(re-frame/subscribe [::bp/screen]))]]
-              ]])
+  (fn []
+    [v-box
+     :gap "20px"
+     :children [[home-title]
+                [gap :size "10vh"]
+                [h-box
+                 :justify :center
+                 :gap "20px"
+                 :children [[re-com/hyperlink-href
+                                   :label "Test Compositions Page"
+                                   :href "#/comp"]
+                                  [re-com/hyperlink-href
+                                   :label "Test Parts Page"
+                                   :href "#/part"]]]]]))
+
+(defn comp-panel []
+  (let [comp-val (reagent/atom nil)
+        display? (reagent/atom nil)]
+    (fn []
+      [re-com/v-box
+       :align :center
+       :gap "1em"
+       :children [[home-title]
+                  [gap :size "10vh"]
+                  [re-com/input-text
+                   :model            comp-val
+                   :width            "300px"
+                   :placeholder      "Copy composition data here"
+                   :on-change        #(dispatch [::events/set-comp-data [(cljr/read-string %)
+                                                                     :comp]])]
+                  [re-com/button
+                   :label            "Submit" 
+                   :on-click          #(reset! display? true)]
+                  (when @display?
+                    (let [div-id "viewer"]
+                      [bv/disp-swara-canvas (subscribe [::subs/comp-data]) div-id
+                       #(bv/viewer-sketch (constantly [@(subscribe [::bp/screen-width])
+                                                       @(subscribe [::bp/screen-height])])
+                                          (assoc @(subscribe [::subs/dispinfo]) :y 30))]))]])))
 
 
-;; about
-
-(defn about-title []
-  [re-com/title
-   :label "This is the About Page."
-   :level :level1])
-
-(defn link-to-home-page []
-  [re-com/hyperlink-href
-   :label "go to Home Page"
-   :href "#/"])
-
-(defn about-panel []
-  [re-com/v-box
-   :gap "1em"
-   :children [[about-title]
-              [link-to-home-page]]])
-
-
-;; main
+(defn part-panel []
+  (let [comp-val (reagent/atom nil)
+        display? (reagent/atom nil)]
+    (fn []
+      [re-com/v-box
+       :gap "1em"
+       :align :center
+       :children [[home-title]
+                  [gap :size "10vh"]
+                  [re-com/input-text
+                   :model            comp-val
+                   :width            "300px"
+                   :placeholder      "Copy part data here"
+                   :on-change        #(dispatch [::events/set-comp-data [(cljr/read-string %)
+                                                                     :part]])]
+                  [re-com/button
+                   :label            "Submit" 
+                   :on-click          #(reset! display? true)]
+                  (when @display?
+                    (let [div-id "viewer"]
+                      [bv/disp-swara-canvas (subscribe [::subs/comp-data]) div-id
+                       #(bv/viewer-sketch (constantly [@(subscribe [::bp/screen-width])
+                                                       @(subscribe [::bp/screen-height])])
+                                          (assoc @(subscribe [::subs/dispinfo]) :y 30)
+                                          p/disp-part)]))]])))
 
 (defn- panels [panel-name]
   (case panel-name
     :home-panel [home-panel]
-    :about-panel [about-panel]
+    :comp-panel [comp-panel]
+    :part-panel [part-panel]
     [:div]))
 
 (defn show-panel [panel-name]

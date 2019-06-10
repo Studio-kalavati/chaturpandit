@@ -23,26 +23,12 @@
   ;; --------------------
   ;; define routes here
   (defroute "/" []
-    (re-frame/dispatch [::events/set-active-panel :home-panel])
-    (re-frame/dispatch [::events/set-re-pressed-example nil])
-    (re-frame/dispatch
-     [::rp/set-keydown-rules
-      {:event-keys [[[::events/set-re-pressed-example "Hello, world!"]
-                     [{:which 72} ;; h
-                      {:which 69} ;; e
-                      {:which 76} ;; l
-                      {:which 76} ;; l
-                      {:which 79} ;; o
-                      ]]]
+    (re-frame/dispatch [::events/set-active-panel :home-panel]))
 
-       :clear-keys
-       [[{:which 27} ;; escape
-         ]]}])
-    )
+  (defroute "/comp" []
+    (re-frame/dispatch [::events/set-active-panel :comp-panel]))
 
-  (defroute "/about" []
-    (re-frame/dispatch [::events/set-active-panel :about-panel]))
-
-
+  (defroute "/part" []
+    (re-frame/dispatch [::events/set-active-panel :part-panel]))
   ;; --------------------
   (hook-browser-navigation!))

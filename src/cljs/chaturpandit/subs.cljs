@@ -26,3 +26,13 @@
  ::comp-data
  (fn [db]
    (-> db :comp-data)))
+
+(re-frame/reg-sub
+ ::waiting-mode
+ (fn [db]
+   (true? (-> db :waiting-mode))))
+
+(re-frame/reg-sub
+ ::loading-error?
+ (fn [db]
+   (true? (-> db :load-error))))

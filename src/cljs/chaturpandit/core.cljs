@@ -8,7 +8,7 @@
    [chaturpandit.routes :as routes]
    [chaturpandit.views :as views]
    [chaturpandit.config :as config]
-   ))
+   [day8.re-frame.http-fx]))
 
 
 (defn dev-setup []

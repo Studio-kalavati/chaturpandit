@@ -6,6 +6,7 @@
                  [re-com "2.4.0"]
                  [secretary "1.2.3"]
                  [studiokalavati/bhatkhande-viewer "0.1.0-SNAPSHOT"]
+                 [day8.re-frame/http-fx "0.1.6"]
                  [re-pressed "0.2.2"]
                  [breaking-point "0.1.2"]]
 

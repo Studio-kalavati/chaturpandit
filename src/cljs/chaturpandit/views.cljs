@@ -2,6 +2,7 @@
   (:require
    [re-frame.core :as re-frame :refer [dispatch subscribe]]
    [re-com.core :as re-com :refer [h-box v-box title hyperlink-href input-text button
+                                   modal-panel
                                    box gap
                                    md-icon-button]]
    [breaking-point.core :as bp]
@@ -26,7 +27,6 @@
               [box
                :align-self :center
                :child [title
-                           
                            :label (str "Bhatkhande notations online")
                            :level :level2]]]])
 
@@ -39,29 +39,58 @@
                 [h-box
                  :justify :center
                  :gap "20px"
-                 :children [[re-com/hyperlink-href
+                 :children [[hyperlink-href
                                    :label "Test Compositions Page"
                                    :href "#/comp"]
-                                  [re-com/hyperlink-href
+                                  [hyperlink-href
                                    :label "Test Parts Page"
                                    :href "#/part"]]]]]))
+
+(defn error-modal
+  []
+  [modal-panel
+   :backdrop-opacity 0.4
+   :child [v-box
+           :children
+           [[gap :size "5vh"]
+            [v-box
+             :justify :center
+             :gap "2vh"
+             :children
+             [[title
+               :label (str "Failed to load from URL")
+               :level :level3]
+              [box
+               :align-self :center
+               :child [button
+                       :label            "Ok" 
+                       :on-click          #(dispatch [::events/reset-loading-error ])]]]]]]])
 
 (defn comp-panel []
   (let [comp-val (reagent/atom nil)
         display? (reagent/atom nil)]
     (fn []
-      [re-com/v-box
+      [v-box
        :align :center
        :gap "1em"
        :children [[home-title]
                   [gap :size "10vh"]
-                  [re-com/input-text
+                  [input-text
                    :model            comp-val
-                   :width            "300px"
+                   :width            "40vw"
+                   :height            "10vw"
                    :placeholder      "Copy composition data here"
                    :on-change        #(dispatch [::events/set-comp-data [(cljr/read-string %)
-                                                                     :comp]])]
-                  [re-com/button
+                                                                         :comp]])]
+                  [title
+                   :label (str "Or paste a URL")
+                   :level :level3]
+                  [input-text
+                   :model            comp-val
+                   :width            "40vw"
+                   :placeholder      "Copy composition url"
+                   :on-change        #(dispatch [::events/get-gist-data % :comp])]
+                  [button
                    :label            "Submit" 
                    :on-click          #(reset! display? true)]
                   (when @display?
@@ -69,25 +98,37 @@
                       [bv/disp-swara-canvas (subscribe [::subs/comp-data]) div-id
                        #(bv/viewer-sketch (constantly [@(subscribe [::bp/screen-width])
                                                        @(subscribe [::bp/screen-height])])
-                                          (assoc @(subscribe [::subs/dispinfo]) :y 30))]))]])))
+                                          (assoc @(subscribe [::subs/dispinfo]) :y 30))]))
+                  (when @(subscribe [::subs/loading-error?])
+                    [error-modal])]])))
 
 
 (defn part-panel []
   (let [comp-val (reagent/atom nil)
         display? (reagent/atom nil)]
     (fn []
-      [re-com/v-box
+      [v-box
        :gap "1em"
        :align :center
        :children [[home-title]
                   [gap :size "10vh"]
-                  [re-com/input-text
+                  [input-text
                    :model            comp-val
-                   :width            "300px"
+                   :width            "40vw"
+                   :height            "10vw"
                    :placeholder      "Copy part data here"
                    :on-change        #(dispatch [::events/set-comp-data [(cljr/read-string %)
-                                                                     :part]])]
-                  [re-com/button
+                                                                         :part]])]
+                  [title
+                   :label (str "Or paste a URL")
+                   :level :level3]
+                  [input-text
+                   :model            comp-val
+                   :width            "40vw"
+                   :placeholder      "Copy composition url"
+                   :on-change        #(dispatch [::events/get-gist-data % :part])]
+
+                  [button
                    :label            "Submit" 
                    :on-click          #(reset! display? true)]
                   (when @display?
@@ -96,7 +137,10 @@
                        #(bv/viewer-sketch (constantly [@(subscribe [::bp/screen-width])
                                                        @(subscribe [::bp/screen-height])])
                                           (assoc @(subscribe [::subs/dispinfo]) :y 30)
-                                          p/disp-part)]))]])))
+                                          p/disp-part)]))
+                  
+                  (when @(subscribe [::subs/loading-error?])
+                    [error-modal])]])))
 
 (defn- panels [panel-name]
   (case panel-name
@@ -110,6 +154,6 @@
 
 (defn main-panel []
   (let [active-panel (re-frame/subscribe [::subs/active-panel])]
-    [re-com/v-box
+    [v-box
      :height "100%"
      :children [[panels @active-panel]]]))

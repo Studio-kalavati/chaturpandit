@@ -1,57 +1,17 @@
-# sargam
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-A [re-frame](https://github.com/Day8/re-frame) application designed to ... well, that part is up to you.
+# chaturpandit 
 
-## Development Mode
+This is a re-frame project that 
 
-### Start Cider from Emacs:
-
-Put this in your Emacs config file:
-
-```
-(setq cider-cljs-lein-repl
-	"(do (require 'figwheel-sidecar.repl-api)
-         (figwheel-sidecar.repl-api/start-figwheel!)
-         (figwheel-sidecar.repl-api/cljs-repl))")
-```
-
-Navigate to a clojurescript file and start a figwheel REPL with `cider-jack-in-clojurescript` or (`C-c M-J`)
-
-### Run application:
-
-```
-lein clean
-lein figwheel dev
-```
-
-Figwheel will automatically push cljs changes to the browser.
-
-Wait a bit, then browse to [http://localhost:3449](http://localhost:3449).
-
-### Run tests:
-
-Install karma and headless chrome
-
-```
-npm install -g karma-cli
-npm install karma karma-cljs-test karma-chrome-launcher --save-dev
-```
-
-And then run your tests
-
-```
-lein clean
-lein doo chrome-headless test once
-```
-
-Please note that [doo](https://github.com/bensu/doo) can be configured to run cljs.test in many JS environments (phantom, chrome, ie, safari, opera, slimer, node, rhino, or nashorn).
-
-## Production Build
+- validates [sargam-spec-compliant](https://github.com/Studio-kalavati/sargam-spec) inputs 
+- displays a Bhatkhande [notation canvas](https://github.com/Studio-kalavati/bhatkhande-notation).
 
 
-To compile clojurescript to javascript:
+## License
 
-```
-lein clean
-lein cljsbuild once min
-```
+Copyright © 2019 Studio Kalavati
+
+This program and the accompanying materials are made available under the
+terms of the Eclipse Public License 2.0 which is available at
+http://www.eclipse.org/legal/epl-2.0.

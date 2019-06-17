@@ -68,6 +68,7 @@
 
 (defn comp-panel []
   (let [comp-val (reagent/atom nil)
+        comp-url (reagent/atom nil)
         display? (reagent/atom nil)]
     (fn []
       [v-box
@@ -78,15 +79,19 @@
                   [input-text
                    :model            comp-val
                    :width            "40vw"
+                   :input-type       :textarea
                    :height            "10vw"
                    :placeholder      "Copy composition data here"
-                   :on-change        #(dispatch [::events/set-comp-data [(cljr/read-string %)
-                                                                         :comp]])]
+                   :on-change        #(do
+                                        (reset! comp-val %)
+                                        (dispatch [::events/set-comp-data
+                                                   (events/parse-res :comp
+                                                                     (js->clj (js/JSON.parse %)))]))]
                   [title
                    :label (str "Or paste a URL")
                    :level :level3]
                   [input-text
-                   :model            comp-val
+                   :model            comp-url
                    :width            "40vw"
                    :placeholder      "Copy composition url"
                    :on-change        #(dispatch [::events/get-gist-data % :comp])]
@@ -105,6 +110,7 @@
 
 (defn part-panel []
   (let [comp-val (reagent/atom nil)
+        part-url (reagent/atom nil)
         display? (reagent/atom nil)]
     (fn []
       [v-box
@@ -114,16 +120,21 @@
                   [gap :size "10vh"]
                   [input-text
                    :model            comp-val
+                   :input-type       :textarea
                    :width            "40vw"
                    :height            "10vw"
                    :placeholder      "Copy part data here"
-                   :on-change        #(dispatch [::events/set-comp-data [(cljr/read-string %)
-                                                                         :part]])]
+                   ;:change-on-blur? false
+                   :on-change        #(do
+                                        (reset! comp-val %)
+                                        (dispatch [::events/set-comp-data
+                                                   (events/parse-res :part
+                                                                     (js->clj (js/JSON.parse %)))]))]
                   [title
                    :label (str "Or paste a URL")
                    :level :level3]
                   [input-text
-                   :model            comp-val
+                   :model           part-url 
                    :width            "40vw"
                    :placeholder      "Copy composition url"
                    :on-change        #(dispatch [::events/get-gist-data % :part])]

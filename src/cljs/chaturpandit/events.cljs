@@ -54,19 +54,24 @@
                                    :default v)]))]
     (w/postwalk (fn [x] (if (map? x) (into {} (map f x)) x)) m)))
 
+(defn parse-res
+  [ctype result]
+  (let [res (kwdize result)
+        ikey (if (= ctype :comp)
+               ::ss/composition
+               ::ss/comp-part)]
+    (when (not (s/valid? ikey res))
+      (s/explain ikey res))
+    (println ctype " got result valid?" (s/valid? ikey res)
+             " -- "(s/valid? ikey result)
+             )
+    [res ctype]))
+
 (reg-event-fx
  ::success-http-result
  (fn [{db :db} [_ ctype result]]
-   (let [res (kwdize result)
-         ikey (if (= ctype :comp)
-                ::ss/composition
-                ::ss/comp-part)]
-     (println ctype " got result " " valid? "
-              (s/valid? ikey res) 
-              (when (not (s/valid? ikey res))
-                (s/explain ikey res)))
-     {:db (assoc db :waiting-mode false)
-      :dispatch [::set-comp-data [res ctype]]})))
+   {:db (assoc db :waiting-mode false)
+    :dispatch [::set-comp-data (parse-res ctype result)]}))
 
 (reg-event-db
  ::fail-http-result

@@ -23,9 +23,6 @@
   ;; --------------------
   ;; define routes here
   (defroute "/" []
-    (re-frame/dispatch [::events/set-active-panel :home-panel]))
-
-  (defroute "/comp" []
     (re-frame/dispatch [::events/set-active-panel :comp-panel]))
 
   (defroute "/part" []

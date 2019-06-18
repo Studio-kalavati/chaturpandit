@@ -19,16 +19,23 @@
    :gap "20px"
    ;:align :stretch
    :justify :center
-   :children [[box
-               :align-self :center
-               :child [hyperlink-href
-                           :label [:i {:class "zmdi zmdi-home zmdi-hc-2x"}]
-                           :href "#/"]]
-              [box
-               :align-self :center
-               :child [title
-                           :label (str "Bhatkhande notations online")
-                           :level :level2]]]])
+   :children (into [[box
+                     :align-self :center
+                     :child [hyperlink-href
+                             :label [:i {:class "zmdi zmdi-home zmdi-hc-2x"}]
+                             :href "#/"]]
+                    [box
+                     :align-self :center
+                     :child [title
+                             :label (str "Bhatkhande notations online")
+                             :level :level2]]]
+                   (let [active-panel (re-frame/subscribe [::subs/active-panel])
+                         showk (if (= :comp-panel @active-panel) "#/part" "#/")]
+                     [[box
+                       :align-self :center
+                       :child [hyperlink-href
+                               :label [:i {:class "zmdi zmdi-flip zmdi-hc-2x"}]
+                               :href showk]]]))])
 
 (defn home-panel []
   (fn []
@@ -136,7 +143,7 @@
                   [input-text
                    :model           part-url 
                    :width            "40vw"
-                   :placeholder      "Copy composition url"
+                   :placeholder      "Copy part url"
                    :on-change        #(dispatch [::events/get-gist-data % :part])]
 
                   [button
@@ -155,7 +162,6 @@
 
 (defn- panels [panel-name]
   (case panel-name
-    :home-panel [home-panel]
     :comp-panel [comp-panel]
     :part-panel [part-panel]
     [:div]))
